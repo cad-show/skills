@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "cad-show",
+  "owner": {
+    "name": "CAD.show",
+    "url": "https://cad.show"
+  },
+  "metadata": {
+    "description": "CAD.show skills for Claude Code and other coding agents."
+  },
+  "plugins": [
+    {
+      "name": "cad-show",
+      "source": "./",
+      "description": "Drive a live CAD.show tab from your coding agent with the `cad` CLI.",
+      "category": "design"
+    }
+  ]
+}

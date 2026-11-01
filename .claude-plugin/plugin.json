@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "cad-show",
+  "version": "0.1.1",
+  "description": "Drive a live CAD.show tab from your coding agent with the `cad` CLI: build, inspect, edit and export 3D geometry through the Scene Actions the in-app agent uses.",
+  "author": {
+    "name": "CAD.show",
+    "url": "https://cad.show"
+  },
+  "homepage": "https://cad.show",
+  "license": "Apache-2.0",
+  "keywords": [
+    "cad",
+    "3d",
+    "cad-show",
+    "byoa"
+  ],
+  "repository": "https://github.com/cad-show/skills"
+}
