@@ -5,7 +5,7 @@ description: >-
   inspect, edit and export 3D geometry through the same Scene Actions the in-app
   agent uses. Use when the task is modelling, measuring, converting or
   exporting 3D in CAD.show — or answering what CAD.show can and cannot do. Both
-  the 289-tool catalog (`cad list` / `cad describe`) and the product's own
+  the 295-tool catalog (`cad list` / `cad describe`) and the product's own
   documentation (`cad docs`) are RETRIEVED on demand, never resident in context.
   Every request starts with `cad plan`.
 compatibility: >-
@@ -97,6 +97,7 @@ the tab exposes. Two different verdicts, two different fixes:
 
 `cad list` and `cad describe` follow the tab into a scope. A tool missing on a
 plate is a **place** problem, not a name problem: do not hunt for a different verb.
+`SCOPED by local-only mode` is the user's choice: work locally; `cad status` says how.
 
 ## Finding a tool — retrieve, don't memorise
 
