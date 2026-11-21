@@ -1,27 +1,27 @@
 ---
 name: cad-show
 description: >-
-  Drive a live CAD.show tab from the terminal with the `cad` CLI — build,
+  Drive the CAD.show desktop app from the terminal with the `cad` CLI — build,
   inspect, edit and export 3D geometry through the same Scene Actions the in-app
   agent uses. Use when the task is modelling, measuring, converting or
   exporting 3D in CAD.show — or answering what CAD.show can and cannot do. Both
-  the 296-tool catalog (`cad list` / `cad describe`) and the product's own
+  the 299-tool catalog (`cad list` / `cad describe`) and the product's own
   documentation (`cad docs`) are RETRIEVED on demand, never resident in context.
   Every request starts with `cad plan`.
 compatibility: >-
   Needs the `cad` CLI (npm @cadshow/cad, Node 20+) and a signed-in CAD.show
-  window to drive, either the desktop app or a local tab with `cad broker` running.
+  desktop app window to drive, with Settings → General → Agent bridge on.
 ---
 
 # CAD.show — drive a live tab from the terminal
 
-One command underlies everything here: **`cad`**. It brokers a tool call from
-your shell into the window that holds the scene, because most tools are
-viewer-only and cannot run server-side at all.
+One command underlies everything here: **`cad`**. It carries a tool call from
+your shell into the CAD.show desktop window that holds the scene, because most
+tools are viewer-only and cannot run server-side at all.
 
 ```sh
 cad plan "<the request>"         # FIRST: the process, where to look, what to read
-cad status                       # broker + tabs + catalog, before any call
+cad status                       # host + window + catalog, before any call
 cad list                         # one line per namespace group
 cad list mesh                    # the tools in one group
 cad describe mesh.create_primitive
@@ -38,7 +38,7 @@ imports, what exports, what is not built yet) are answered by `cad docs`, from
 the corpus the app itself serves. Never infer one from the tool catalog: a tool
 existing is not a promise, and this file holds no capability list to go stale.
 
-If `cad` is not on PATH, it is `node <repo>/cli/cad.mjs` — same arguments.
+If `cad` is not on PATH, install it: `npm i -g @cadshow/cad`, then `cad setup`.
 
 ## Plan first — every request, before any call
 
@@ -75,14 +75,13 @@ It answers all four preconditions:
 | What you're checking | What "bad" looks like | Fix |
 | -------------------- | --------------------- | --- |
 | A host is running | `host: none running` | `cad setup`: it finds the desktop app, waits for sign-in, health-checks |
-| A window is attached | `no tabs connected` | Open a Stage — in the desktop app, or on localhost with `?byoa=1` |
+| A window is attached | `no tabs connected` | Open a Stage in the desktop app |
 | **It is VISIBLE** | `HIDDEN` | Bring it to the foreground — see the rule below |
 | Exactly one | `several tabs are connected` | Pass `--tab <id>`; they hold **different scenes** |
 
-**Two hosts, one protocol.** `cad status` names which answered. The **desktop
-app** hosts the bridge itself — no broker process; its Settings say whether it
-may raise its window (Ask prompts in the terminal). A **browser tab** needs
-`cad broker` left running. `--host shell|broker` picks when both are up.
+**The desktop app is the host.** It serves the bridge itself while Settings →
+General → Agent bridge is on; `cad status` names it. Its Settings also say
+whether it may raise its window (Ask prompts in the terminal).
 
 `cad status` also cross-checks the catalog the server advertises against the one
 the tab exposes. Two different verdicts, two different fixes:
@@ -138,7 +137,7 @@ A **fact** is one sentence re-proved against the code on every CI run, negative
 space included. A **support doc** (`support/…`) holds the refusals and limits,
 written for CAD.show's support assistant: reference, not directions.
 
-No broker or tab needed; every footer names the origin it read (`--origin`).
+No app or window needed; every footer names the origin it read (`--origin`).
 
 ## THE RULE — a timeout does not mean the call did not happen
 
@@ -146,7 +145,7 @@ This is the one thing that will corrupt a build if you get it wrong.
 
 > A timed-out `cad call` may have **fully succeeded**. The mutation lands on
 > screen; only the result envelope is stuck behind an animation frame the
-> browser never renders. **A blind retry duplicates the object.**
+> window never renders. **A blind retry duplicates the object.**
 
 So: **never re-issue a mutation because it timed out.** `cad call` helps you —
 before any non-`query.` call it snapshots scene identity, and on a timeout it
@@ -267,10 +266,10 @@ the retry is a different page with a different URL.
 ## Send the plate to PreForm
 
 ```sh
-cad preform --host shell [--dental]   # the flags: cad preform --help
+cad preform [--dental]               # the flags: cad preform --help
 ```
 
-Desktop app only: a browser tab answers `preform_unavailable`. The `.form` path
+The desktop app writes the `.form`; its path
 prints alone on the last line. On a timeout, look for the `.form` before
 re-running; a re-send writes a second copy beside the first.
 
@@ -295,7 +294,7 @@ tools (`docs.search`) and failures always print whole. Exit codes:
 | ---- | ------- |
 | `0` | the tool ran and returned ok |
 | `1` | the tool ran and returned an error envelope (or `validate` rejected the args) |
-| `2` | transport problem — no broker, no tab, ambiguous tab, timeout, **or a confirm or charge you did not give** |
+| `2` | transport problem — no host, no window, ambiguous tab, timeout, **or a confirm or charge you did not give** |
 
 `--json` prints the whole envelope (including `landed` on a verified timeout).
 `--timeout <ms>` raises the 30 s ceiling for a slow JSCAD recompile or
@@ -303,12 +302,12 @@ generative run.
 
 ## Limits — know these before you promise anything
 
-- **Local, and off unless asked for.** A browser tab needs a loopback origin
-  plus `?byoa=1`; the desktop app needs its Settings switch on. Neither can be
-  reached from cad.show (`cad docs` drives nothing, so it can).
-- **No enforcement.** Approval, capability, rate-limit and cost gates are all
-  off on this path, and it bypasses LLM metering entirely. Whoever can reach the
-  broker is the tab's user. The confirm prompt above is a CONSENT about one act,
-  not an authorization boundary.
+- **Desktop only, and off unless asked for.** The desktop app serves the
+  bridge while its Settings switch is on; the cad.show website cannot be driven
+  (`cad docs` drives nothing, so it answers anywhere).
+- **Consent is per act, not a lock.** The y/N on a gated call and the price
+  line on a cloud charge each ask about one act. While the switch is on,
+  anything on this computer that reaches the bridge acts as the signed-in user,
+  so tell the user to turn it off when the work is done.
 - **The window is the runtime.** Reload resets the scene; navigate and the next call lands elsewhere.
 - **Discovery answers while hidden; mutation does not.** `cad list`, `describe` and `validate` need no frame. A discovery timeout is never `HIDDEN`. `tab_hidden` was refused unsent: foreground, run it again.
