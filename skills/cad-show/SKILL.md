@@ -5,7 +5,7 @@ description: >-
   inspect, edit and export 3D geometry through the same Scene Actions the in-app
   agent uses. Use when the task is modelling, measuring, converting or
   exporting 3D in CAD.show — or answering what CAD.show can and cannot do. Both
-  the 299-tool catalog (`cad list` / `cad describe`) and the product's own
+  the 300-tool catalog (`cad list` / `cad describe`) and the product's own
   documentation (`cad docs`) are RETRIEVED on demand, never resident in context.
   Every request starts with `cad plan`.
 compatibility: >-
